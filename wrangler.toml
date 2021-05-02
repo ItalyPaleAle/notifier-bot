@@ -1,0 +1,16 @@
+name = "notify-cfbot"
+type = "javascript"
+route = ""
+# Dev environment is deployed to a workers.dev domain
+workers_dev = true
+# Use CF_ACCOUNT_ID instead
+#account_id = ""
+# Use CF_ZONE_ID instead
+#zone_id = ""
+
+[build]
+command = "npm run build"
+watch_dir = "src"
+
+[build.upload]
+format = "service-worker"
