@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.mjs",
     "dev": "NODE_ENV=development node build.mjs",
+    "check": "tsc --project ./ --noEmit",
     "format": "prettier --write '**/*.{ts,js,css,json,md}'",
     "test:clean": "rimraf ./dist ./transpiled/src ./transpiled/test",
     "test": "npm run test:clean && npm run test:build && mocha -r esm -r source-map-support/register --recursive transpiled/test",
@@ -30,6 +31,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
+    "@italypaleale/idtoken-verifier": "2.1.4",
     "tiny-request-router": "^1.2.2"
   }
 }
