@@ -31,7 +31,7 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "@italypaleale/idtoken-verifier": "2.1.4",
+    "jose": "^3.11.6",
     "tiny-request-router": "^1.2.2"
   }
 }

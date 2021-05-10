@@ -13,7 +13,7 @@ workers_dev = true
 TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
 
 # Specific env vars for the dev environment
-AUTH_JWKS = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
+AUTH_JWKS_URI = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
 AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
 
 [build]
@@ -28,5 +28,5 @@ upload = { format = "service-worker" }
 
 [env.production.vars]
 # Specific env vars for the production environment
-AUTH_JWKS = "https://login.botframework.com/v1/.well-known/keys"
+AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
 AUTH_ISSUER = "https://api.botframework.com"

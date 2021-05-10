@@ -15,9 +15,7 @@ try {
         target: 'es2020',
         charset: 'utf8',
         color: true,
-        // Use format esm so there's no IIFE and code is attached together "as-is"
-        // This is fine for the Cloudflare Workers environment
-        format: 'esm',
+        format: 'iife',
     }
     if (mode == 'production') {
         // In production mode, minify the output and enable sourcemaps

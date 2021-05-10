@@ -4,7 +4,7 @@ import {ErrorResponse} from './lib/utils'
 import {CheckAuth} from './auth'
 
 /**
- * Handler for the GET /bot/message route, where Bot Framework sends messages to
+ * Handler for the POST /bot/message route, where Bot Framework sends messages to
  *
  * @param req Request object
  * @returns Response object for the request
@@ -19,6 +19,10 @@ const handler: Handler = async (req: Request) => {
         })
     }
 
-    return new Response('OK')
+    return new Response(JSON.stringify(auth, undefined, '  '), {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
 }
 export default handler
