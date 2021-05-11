@@ -10,8 +10,7 @@
     "format": "prettier --write '**/*.{ts,js,mjs,cjs,css,json,md}'",
     "test:clean": "rimraf ./dist ./transpiled/src ./transpiled/test",
     "test": "npm run test:clean && npm run test:build && mocha -r esm -r source-map-support/register --recursive transpiled/test",
-    "test:build": "tsc --project ./test",
-    "botframework:spec": "cd src/schema && sh update-spec.sh"
+    "test:build": "tsc --project ./test"
   },
   "author": "Alessandro Segala (@ItalyPaleAle)",
   "license": "None",
