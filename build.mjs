@@ -16,6 +16,7 @@ try {
         charset: 'utf8',
         color: true,
         format: 'iife',
+        mainFields: ['browser', 'module', 'main'],
     }
     if (mode == 'production') {
         // In production mode, minify the output and enable sourcemaps
@@ -28,7 +29,6 @@ try {
 
     // Build with esbuild
     await esbuild.build(esbuildOpts)
-}
-catch (err) {
+} catch (err) {
     process.exit(1)
 }

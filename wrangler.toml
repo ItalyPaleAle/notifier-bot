@@ -8,11 +8,17 @@ workers_dev = true
 # Use CF_ZONE_ID instead
 #zone_id = ""
 
+# KV namespaces for dev environment
+kv_namespaces = [
+    { binding = "WEBHOOKS", id = "118d5a0fd993412495eb4b7ae2e54241", preview_id = "71c1fe726f4447c5a408152bd771cf6c" }
+]
+
 [vars]
 # Env vars for all environments
 TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
 
 # Specific env vars for the dev environment
+# This uses the Bot Emulator
 AUTH_JWKS_URI = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
 AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
 
@@ -20,6 +26,32 @@ AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935
 command = "NODE_ENV=development npm run build"
 watch_dir = "src"
 upload = { format = "service-worker" }
+
+#
+# Staging environment
+#
+[env.staging]
+kv_namespaces = [
+    { binding = "WEBHOOKS", id = "fec7e2ed765046349e1448283f3abd71" }
+]
+
+[env.staging.build]
+command = "npm run build"
+watch_dir = "src"
+upload = { format = "service-worker" }
+
+[env.staging.vars]
+# Specific env vars for the staging environment
+AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
+AUTH_ISSUER = "https://api.botframework.com"
+
+#
+# Production environment
+#
+[env.production]
+kv_namespaces = [
+    { binding = "WEBHOOKS", id = "27efc34f0f0d463b8f7780dd2315d687" }
+]
 
 [env.production.build]
 command = "npm run build"

@@ -2,6 +2,9 @@ import {Method} from 'tiny-request-router'
 
 import router from './routes'
 
+// Register all activities
+import './activities'
+
 // Main entry point for Workers
 addEventListener('fetch', (event: FetchEvent) => {
     const req = event.request

@@ -13,17 +13,17 @@ type keyCache = Map<string, IJWK>
  * Manages JWK and requests them from the JWKS
  */
 export class JWK {
-    _jwksUri: string = ''
-    _lastUpdate?: number
-    _keyCache?: keyCache
-    _fetching?: Promise<keyCache>
+    private jwksUri: string = ''
+    private lastUpdate?: number
+    private keyCache?: keyCache
+    private fetching?: Promise<keyCache>
 
     /**
      * Constructor - initializes the object
      * @param jwksUri URI of the JWKS file
      */
     constructor(jwksUri: string) {
-        this._jwksUri = jwksUri
+        this.jwksUri = jwksUri
     }
 
     /**
@@ -33,7 +33,9 @@ export class JWK {
      * @param protectedHeader Protected header from the JWT
      * @returns The key object
      */
-    async getKey(protectedHeader: JWSHeaderParameters): Promise<CryptoKey> {
+    public async getKey(
+        protectedHeader: JWSHeaderParameters
+    ): Promise<CryptoKey> {
         // Ensure the key is in the correct format
         if (
             !protectedHeader ||
@@ -60,14 +62,14 @@ export class JWK {
         }
 
         // Request the JWKS
-        if (!this._fetching) {
+        if (!this.fetching) {
             // Make only one request in parallel
-            this._fetching = this.fetchJWKS()
+            this.fetching = this.fetchJWKS()
         }
-        const keys = await this._fetching
-        this._fetching = undefined
-        this._lastUpdate = Date.now()
-        this._keyCache = keys
+        const keys = await this.fetching
+        this.fetching = undefined
+        this.lastUpdate = Date.now()
+        this.keyCache = keys
 
         // Return the key
         // If the key is still not in the cache, then throw an exception
@@ -83,16 +85,16 @@ export class JWK {
      * @param kid Key ID
      * @returns The CryptoKey (a KeyLike object) with the key
      */
-    async cryptoKeyFromCache(kid: string): Promise<CryptoKey | null> {
-        if (!this._keyCache?.has(kid)) {
+    private async cryptoKeyFromCache(kid: string): Promise<CryptoKey | null> {
+        if (!this.keyCache?.has(kid)) {
             return null
         }
-        const k = this._keyCache.get(kid)!
+        const k = this.keyCache.get(kid)!
 
         // Convert to a cryptoKey
         const obj = (await parseJwk(k, 'RS256')) as CryptoKey
         if (!obj || obj.type != 'public') {
-            throw new Error('Found a non-public key')
+            throw Error('Found a non-public key')
         }
 
         return obj
@@ -103,9 +105,9 @@ export class JWK {
      *
      * @returns List of keys in the JWKS
      */
-    async fetchJWKS(): Promise<keyCache> {
+    private async fetchJWKS(): Promise<keyCache> {
         // Request the JWKS; this can be cached in the Cloudflare cache
-        const res = await fetch(AUTH_JWKS_URI, {
+        const res = await fetch(this.jwksUri, {
             // Cloudflare-specific options
             cf: {
                 // Force caching
@@ -145,10 +147,9 @@ export class JWK {
      *
      * @returns True if it's been too soon since the last request
      */
-    isCoolingDown(): boolean {
+    private isCoolingDown(): boolean {
         return !!(
-            this._lastUpdate &&
-            this._lastUpdate > Date.now() - jwksFetchCooldown
+            this.lastUpdate && this.lastUpdate > Date.now() - jwksFetchCooldown
         )
     }
 }

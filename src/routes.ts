@@ -3,7 +3,7 @@ import {Router} from 'tiny-request-router'
 import {ErrorResponse} from './lib/utils'
 import {HttpStatusCode} from './lib/http-status-codes'
 
-import IncomingMessageRoute from './route-incoming-message'
+import IncomingMessageRoute from './routes/incoming-message'
 
 // Router for the Worker
 const router = new Router<Handler>()
