@@ -6,6 +6,17 @@ const mode = process.env.NODE_ENV || 'production'
 const outdir = 'dist/'
 
 try {
+    // Environmental variables
+    const define = {}
+
+    // Override the service URL
+    // This is used in development because the Bot Framework Emulator is running on localhost, but the Worker is running on the Cloudflare network, so it can't connect to "localhost"
+    if (process.env.SERVICE_URL_OVERRIDE) {
+        // Value must be quoted because it's a string
+        define['SERVICE_URL_OVERRIDE'] =
+            `'` + process.env.SERVICE_URL_OVERRIDE + `'`
+    }
+
     /** @type esbuild.BuildOptions */
     const esbuildOpts = {
         entryPoints: ['src/index.ts'],
@@ -17,6 +28,7 @@ try {
         color: true,
         format: 'iife',
         mainFields: ['browser', 'module', 'main'],
+        define,
     }
     if (mode == 'production') {
         // In production mode, minify the output and enable sourcemaps

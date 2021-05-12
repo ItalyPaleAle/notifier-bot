@@ -16,6 +16,7 @@ kv_namespaces = [
 [vars]
 # Env vars for all environments
 TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
 
 # Specific env vars for the dev environment
 # This uses the Bot Emulator

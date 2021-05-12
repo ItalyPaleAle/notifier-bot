@@ -1,4 +1,5 @@
 import {NewWebhook} from '../lib/webhooks'
+import BotClient from '../bot/client'
 // Import types only
 import {Activity} from 'botframework-schema'
 
@@ -10,6 +11,67 @@ export default async (activity: Activity) => {
     }
 
     // Generate a new webhook
-    const webhook = await NewWebhook(activity.conversation.id)
-    console.log(webhook.id, webhook.key)
+    const webhook = await NewWebhook(activity.conversation)
+
+    // Send a message to the client with the credentials to the webhook
+    const client = new BotClient(
+        activity.serviceUrl,
+        activity.conversation,
+        activity.recipient,
+        activity.from
+    )
+    // We must await on this otherwise there would be a fetch invocation outside of a running request in the worker
+    const send: Partial<Activity> = {
+        type: 'message',
+        text: `Here's the webhook I've created for you:`,
+        attachments: [
+            {
+                contentType: 'application/vnd.microsoft.card.adaptive',
+                content: {
+                    type: 'AdaptiveCard',
+                    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
+                    version: '1.2',
+                    body: [
+                        {
+                            type: 'Container',
+                            items: [
+                                {
+                                    type: 'TextBlock',
+                                    text: 'Webhook URL:',
+                                    spacing: 'Small',
+                                },
+                                {
+                                    type: 'TextBlock',
+                                    // TODO: Write full URL
+                                    text: 'https://localhost:8080/webhook/' + webhook.id,
+                                    fontType: 'Monospace',
+                                    wrap: true,
+                                    spacing: 'Small',
+                                },
+                            ],
+                        },
+                        {
+                            type: 'Container',
+                            items: [
+                                {
+                                    type: 'TextBlock',
+                                    text: 'Access token:',
+                                    spacing: 'Small',
+                                },
+                                {
+                                    type: 'TextBlock',
+                                    text: webhook.key,
+                                    fontType: 'Monospace',
+                                    wrap: true,
+                                    spacing: 'Small',
+                                },
+                            ],
+                            separator: true,
+                        },
+                    ],
+                },
+            },
+        ],
+    }
+    await client.sendToConversation(send)
 }
