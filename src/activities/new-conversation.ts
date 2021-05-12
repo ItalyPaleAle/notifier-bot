@@ -42,8 +42,7 @@ export default async (activity: Activity) => {
                                 },
                                 {
                                     type: 'TextBlock',
-                                    // TODO: Write full URL
-                                    text: 'https://localhost:8080/webhook/' + webhook.id,
+                                    text: `${BASE_URL}/webhook/${webhook.id}`,
                                     fontType: 'Monospace',
                                     wrap: true,
                                     spacing: 'Small',

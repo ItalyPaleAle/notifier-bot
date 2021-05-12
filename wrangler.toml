@@ -14,11 +14,9 @@ kv_namespaces = [
 ]
 
 [vars]
-# Env vars for all environments
 TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
 TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
-
-# Specific env vars for the dev environment
+BASE_URL = "http://TODO"
 # This uses the Bot Emulator
 AUTH_JWKS_URI = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
 AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
@@ -27,6 +25,23 @@ AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935
 command = "NODE_ENV=development npm run build"
 watch_dir = "src"
 upload = { format = "service-worker" }
+
+#
+# Local (dev) environment
+#
+[env.local]
+# Use the preview ID for all
+kv_namespaces = [
+    { binding = "WEBHOOKS", id = "71c1fe726f4447c5a408152bd771cf6c", preview_id = "71c1fe726f4447c5a408152bd771cf6c" }
+]
+
+[env.local.vars]
+TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+BASE_URL = "http://127.0.0.1:8787"
+# This uses the Bot Emulator
+AUTH_JWKS_URI = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
+AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
 
 #
 # Staging environment
@@ -42,7 +57,9 @@ watch_dir = "src"
 upload = { format = "service-worker" }
 
 [env.staging.vars]
-# Specific env vars for the staging environment
+TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+BASE_URL = "http://TODO"
 AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
 AUTH_ISSUER = "https://api.botframework.com"
 
@@ -60,6 +77,8 @@ watch_dir = "src"
 upload = { format = "service-worker" }
 
 [env.production.vars]
-# Specific env vars for the production environment
+TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+BASE_URL = "http://TODO"
 AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
 AUTH_ISSUER = "https://api.botframework.com"

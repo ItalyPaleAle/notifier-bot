@@ -6,6 +6,7 @@ declare global {
     const SERVICE_URL_OVERRIDE: string | undefined
 
     // Constants from wrangler.toml
+    const BASE_URL: string
     const TEAMS_TOKEN_ENDPOINT: string
     const TEAMS_APP_ID: string
     const AUTH_JWKS_URI: string
