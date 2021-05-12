@@ -3,12 +3,14 @@ import {Router} from 'tiny-request-router'
 import {ErrorResponse} from './lib/utils'
 import {HttpStatusCode} from './lib/http-status-codes'
 
+import WebhookRoute from './routes/webhook'
 import IncomingMessageRoute from './routes/incoming-message'
 
 // Router for the Worker
 const router = new Router<Handler>()
 
 // Routes
+router.post('/webhook/:id', WebhookRoute)
 router.post('/bot/message', IncomingMessageRoute)
 
 // Catch-all route that returns with a 404

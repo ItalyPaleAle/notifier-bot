@@ -11,7 +11,7 @@ export default async (activity: Activity) => {
     }
 
     // Generate a new webhook
-    const webhook = await NewWebhook(activity.conversation)
+    const webhook = await NewWebhook(activity)
 
     // Send a message to the client with the credentials to the webhook
     const client = new BotClient(
@@ -21,7 +21,11 @@ export default async (activity: Activity) => {
         activity.from
     )
     // We must await on this otherwise there would be a fetch invocation outside of a running request in the worker
-    const send: Partial<Activity> = {
+    await client.sendToConversation(buildMessage(webhook.id, webhook.key))
+}
+
+function buildMessage(webhookId: string, webhookKey: string): Partial<Activity> {
+    return {
         type: 'message',
         text: `Here's the webhook I've created for you:`,
         attachments: [
@@ -42,7 +46,7 @@ export default async (activity: Activity) => {
                                 },
                                 {
                                     type: 'TextBlock',
-                                    text: `${BASE_URL}/webhook/${webhook.id}`,
+                                    text: `${BASE_URL}/webhook/${webhookId}`,
                                     fontType: 'Monospace',
                                     wrap: true,
                                     spacing: 'Small',
@@ -59,7 +63,7 @@ export default async (activity: Activity) => {
                                 },
                                 {
                                     type: 'TextBlock',
-                                    text: webhook.key,
+                                    text: webhookKey,
                                     fontType: 'Monospace',
                                     wrap: true,
                                     spacing: 'Small',
@@ -72,5 +76,4 @@ export default async (activity: Activity) => {
             },
         ],
     }
-    await client.sendToConversation(send)
 }

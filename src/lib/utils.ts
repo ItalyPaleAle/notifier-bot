@@ -41,3 +41,14 @@ export function ErrorResponse(opts: ErrorResponseOpts): Response {
         headers,
     })
 }
+
+/**
+ * Returns an ErrorResponse for an Internal Server Error (500)
+ * @returns A Response object that can be sent to the client
+ */
+export function InternalServerErrorResponse(): Response {
+    return ErrorResponse({
+        status: HttpStatusCode.InternalServerError,
+        message: 'An internal error occurred',
+    })
+}
