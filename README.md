@@ -6,7 +6,7 @@ This bot is meant to be deployed on Cloudflare Workers, and it stores data on Wo
 
 ## Try it live
 
-
+TODO
 
 ## Development guide
 
@@ -18,7 +18,7 @@ There are 3 environments for this bot:
   (worker name: `notify-cfbot-local`)
 - dev: deployed to `https://notify-cfbot.italypaleale.workers.dev`  
   (worker name: `notify-cfbot`)
-- production: deployed to https://TODO  
+- production: deployed to `https://notifier.italypaleale.me`
   (worker name: `notify-cfbot-production`)
 
 ### Run locally
