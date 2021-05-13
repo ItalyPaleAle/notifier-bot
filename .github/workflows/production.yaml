@@ -1,15 +1,14 @@
-# CI: deploys to dev
+# Deploys to production, triggered manually
 
 # Required secrets:
 # CF_ACCOUNT_ID: Account ID for Cloudflare Workers
 # CF_API_TOKEN: API token for Cloudflare (for the Workers CLI)
+# CF_ZONE_ID: Zone ID for the Cloudflare domain
 
-name: 'CI'
+name: 'Production'
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -34,9 +33,11 @@ jobs:
           name: 'dist'
           path: 'dist'
 
-      - name: 'Deploy to dev environment'
+      - name: 'Deploy to production environment'
         uses: cloudflare/wrangler-action@1.3.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
+          environment: 'production'
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
