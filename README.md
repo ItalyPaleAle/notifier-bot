@@ -29,10 +29,11 @@ export CF_ACCOUNT_ID=..
 wrangler dev --env local
 ```
 
-Note: to be able to communicate with the [Bot Framework Emulator](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-debug-emulator), you may need to create a tunnel with ngrok on port 49482 first:
+Note: to be able to communicate with the [Bot Framework Emulator](https://docs.microsoft.com/en-us/azure/bot-service/bot-service-debug-emulator), you may need to create a tunnel with ngrok on the port the Bot Emulator is listening to first:
 
 ```sh
-ngrok :49482
+# Set the port to the one Bot Framework Emulator is listening to
+ngrok http :49482
 ```
 
 Then start wrangler with:
