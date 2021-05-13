@@ -21,7 +21,7 @@ AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
 AUTH_ISSUER = "https://api.botframework.com"
 
 [build]
-command = "NODE_ENV=development npm run build"
+command = "npm run build"
 watch_dir = "src"
 upload = { format = "service-worker" }
 
@@ -33,6 +33,11 @@ upload = { format = "service-worker" }
 kv_namespaces = [
     { binding = "WEBHOOKS", id = "71c1fe726f4447c5a408152bd771cf6c", preview_id = "71c1fe726f4447c5a408152bd771cf6c" }
 ]
+
+[env.local.build]
+command = "NODE_ENV=development npm run build"
+watch_dir = "src"
+upload = { format = "service-worker" }
 
 [env.local.vars]
 TEAMS_APP_ID = "81e2ddb7-7c62-4d4a-9506-55e6a7b159c0"
