@@ -10,13 +10,24 @@ import {
 } from '../lib/webhooks'
 import {HttpStatusCode} from '../lib/http-status-codes'
 import {Handler} from '../lib/types'
-import {ErrorResponse, ErrorResponseOpts, InternalServerErrorResponse} from '../lib/utils'
+import {
+    ErrorResponse,
+    ErrorResponseOpts,
+    InternalServerErrorResponse,
+    LimitReader,
+} from '../lib/utils'
 import BotClient from '../bot/client'
 
 /** Type for the body of JSON-formatted webhook calls */
 type WebhookJSONRequest = {
     message: string
 }
+
+/**
+ * Maximum amount of data to read from the request body
+ * Note that this is a number of characters, as the length is calculated with `Strings.prototype.length`
+ */
+const MaxBodySize = 4 << 10
 
 /**
  * Handler for the POST /webhook/:id route, to receive webhook messages
@@ -43,8 +54,14 @@ const handler: Handler = async (req: Request, params: Params) => {
         return InternalServerErrorResponse()
     }
 
-    // TODO: Limit data read from the client
-    // See https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/getReader
+    // Read from the request body with a limit, to avoid loading too much data in memory
+    const read = await LimitReader(req.body!, MaxBodySize)
+    if (!read) {
+        return ErrorResponse({
+            message: 'Request body is empty',
+            status: HttpStatusCode.BadRequest,
+        })
+    }
 
     // Get the message to send and the content type
     // Split to get the part until ; only, in case there's an encoding added
@@ -54,7 +71,7 @@ const handler: Handler = async (req: Request, params: Params) => {
         // JSON-formatted requests
         case 'application/json':
             try {
-                const body = (await req.json()) as WebhookJSONRequest
+                const body = JSON.parse(read) as WebhookJSONRequest
                 if (!body || !body.message) {
                     return ErrorResponse({
                         message: `Missing key 'message' in the request body`,
@@ -73,7 +90,7 @@ const handler: Handler = async (req: Request, params: Params) => {
         // Plain-text requests
         case 'text/plain':
             try {
-                message = await req.text()
+                message = read
             } catch (err) {
                 return ErrorResponse({
                     message: `Request body could not be read`,

@@ -4,7 +4,8 @@ import router from './routes'
 
 // Register all activities
 import './activities'
-import {InternalServerErrorResponse} from './lib/utils'
+import {ErrorResponse, InternalServerErrorResponse} from './lib/utils'
+import {HttpStatusCode} from './lib/http-status-codes'
 
 // Main entry point for Workers
 addEventListener('fetch', (event: FetchEvent) => {
@@ -22,6 +23,14 @@ addEventListener('fetch', (event: FetchEvent) => {
                     console.error('Caught error', err)
                 }
                 return InternalServerErrorResponse()
+            })
+        )
+    } else {
+        // Return a 404
+        event.respondWith(
+            ErrorResponse({
+                status: HttpStatusCode.NotFound,
+                message: 'Not found',
             })
         )
     }

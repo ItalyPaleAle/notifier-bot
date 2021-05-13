@@ -7,7 +7,7 @@
     "build": "node build.mjs",
     "dev": "NODE_ENV=development node build.mjs",
     "check": "tsc --project ./ --noEmit",
-    "format": "prettier --write '**/*.{ts,js,mjs,cjs,css,json,md}'",
+    "format": "prettier --write '**/*.{ts,js,mjs,cjs,css,json}'",
     "test:clean": "rimraf ./dist ./transpiled/src ./transpiled/test",
     "test": "npm run test:clean && npm run test:build && mocha -r esm -r source-map-support/register --recursive transpiled/test",
     "test:build": "tsc --project ./test"

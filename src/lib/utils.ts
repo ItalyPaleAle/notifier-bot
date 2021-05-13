@@ -52,3 +52,45 @@ export function InternalServerErrorResponse(): Response {
         message: 'An internal error occurred',
     })
 }
+
+/**
+ * Read from a ReadableStream up to a certain length, then close the input stream
+ * Note: this uses `Strings.prototype.length` so it counts the number of Unicode codepoints
+ * @param stream Stream to read from
+ * @param limit Limit of characters to read
+ * @returns A string which is truncated at `limit`
+ */
+export async function LimitReader(
+    stream: ReadableStream<Uint8Array>,
+    limit: number
+): Promise<string> {
+    if (!stream) {
+        throw Error('Parameter stream is empty')
+    }
+    if (limit < 1) {
+        throw Error('Parameter limit must be greater than 1')
+    }
+
+    const reader = stream.getReader()
+    const utf8Decoder = new TextDecoder('utf-8')
+    let read = ''
+    while (true) {
+        // Read a chunk and decode it to a UTF-8 string
+        const {done, value} = await reader.read()
+        if (value) {
+            read += utf8Decoder.decode(value, {stream: true})
+        }
+
+        // If we read too much data, end the stream, truncate the data, and return
+        if (read.length >= limit) {
+            await reader.cancel('Reached limit')
+            return read.substring(0, limit)
+        }
+
+        if (done) {
+            break
+        }
+    }
+
+    return read
+}

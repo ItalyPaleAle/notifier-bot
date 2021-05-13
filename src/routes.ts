@@ -1,7 +1,5 @@
 import {Handler} from './lib/types'
 import {Router} from 'tiny-request-router'
-import {ErrorResponse} from './lib/utils'
-import {HttpStatusCode} from './lib/http-status-codes'
 
 import WebhookRoute from './routes/webhook'
 import IncomingMessageRoute from './routes/incoming-message'
@@ -12,13 +10,5 @@ const router = new Router<Handler>()
 // Routes
 router.post('/webhook/:id', WebhookRoute)
 router.post('/bot/message', IncomingMessageRoute)
-
-// Catch-all route that returns with a 404
-router.all('*', () => {
-    return ErrorResponse({
-        status: HttpStatusCode.NotFound,
-        message: 'Not found',
-    })
-})
 
 export default router
