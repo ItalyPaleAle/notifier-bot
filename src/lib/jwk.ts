@@ -33,15 +33,9 @@ export class JWK {
      * @param protectedHeader Protected header from the JWT
      * @returns The key object
      */
-    public async getKey(
-        protectedHeader: JWSHeaderParameters
-    ): Promise<CryptoKey> {
+    public async getKey(protectedHeader: JWSHeaderParameters): Promise<CryptoKey> {
         // Ensure the key is in the correct format
-        if (
-            !protectedHeader ||
-            !protectedHeader.kid ||
-            protectedHeader.alg != 'RS256'
-        ) {
+        if (!protectedHeader || !protectedHeader.kid || protectedHeader.alg != 'RS256') {
             throw Error(
                 'Invalid protectedHeader argument: kid and/or alg are invalid or empty. KID: ' +
                     protectedHeader?.kid +
@@ -148,8 +142,6 @@ export class JWK {
      * @returns True if it's been too soon since the last request
      */
     private isCoolingDown(): boolean {
-        return !!(
-            this.lastUpdate && this.lastUpdate > Date.now() - jwksFetchCooldown
-        )
+        return !!(this.lastUpdate && this.lastUpdate > Date.now() - jwksFetchCooldown)
     }
 }

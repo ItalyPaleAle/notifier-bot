@@ -22,9 +22,7 @@ export type ActivityRouteMatchObject = {
 }
 
 /** Used to determine if the route should be processed by this callback. */
-export type ActivityRouteMatch =
-    | ActivityRouteMatchFunction
-    | ActivityRouteMatchObject
+export type ActivityRouteMatch = ActivityRouteMatchFunction | ActivityRouteMatchObject
 
 /**
  * Route callback that processes activities. Can be async

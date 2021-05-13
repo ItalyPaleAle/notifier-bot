@@ -40,8 +40,7 @@ const handler: Handler = async (req: Request) => {
         activity.expiration = new Date(activity.expiration)
     }
     if (typeof activity.localTimestamp == 'string') {
-        ;(activity as ActivityTimestamps).rawLocalTimestamp =
-            activity.localTimestamp
+        ;(activity as ActivityTimestamps).rawLocalTimestamp = activity.localTimestamp
         activity.localTimestamp = new Date(activity.localTimestamp)
     }
 
