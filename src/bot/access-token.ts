@@ -1,3 +1,10 @@
+const AccessTokenKVKey = '__access_token'
+
+type AccessTokenKV = {
+    token: string
+    expiry: number
+}
+
 /**
  * Used to manage the access token to send requests to the Bot Service.
  * Most times you want to use the singleton and invoke the `getToken()` method
@@ -26,9 +33,41 @@ export class AccessToken {
             return this.token
         }
 
+        // Try loading it from Workers KV
+        if (await this.loadTokenFromKV()) {
+            return this.token!
+        }
+
         // Refresh the token and then return it
         await this.refreshToken()
         return this.token!
+    }
+
+    /**
+     * Tries loading the token from the cache in Workers KV
+     * @returns A boolean indicating if the token was loaded successfully
+     */
+    private async loadTokenFromKV(): Promise<boolean> {
+        // Try loading from KV
+        try {
+            const read = await WEBHOOKS.get(AccessTokenKVKey)
+            if (read) {
+                const parsed = JSON.parse(read) as AccessTokenKV
+                if (!parsed || !parsed.token || !parsed.expiry) {
+                    return false
+                }
+
+                // Check if the token has at least 15 seconds of validity
+                if (Date.now() < parsed.expiry - 15 * 1000) {
+                    this.token = parsed.token
+                    this.expiry = parsed.expiry
+                    return true
+                }
+            }
+        } catch (err) {
+            console.log('Caught exception while requesting access token from KV', err)
+        }
+        return false
     }
 
     /**
@@ -73,9 +112,19 @@ export class AccessToken {
             tokenRes.expires_in = parseInt(tokenRes.expires_in, 10)
         }
 
-        // Store the token
+        // Store the token in the object
         this.token = tokenRes.access_token
         this.expiry = Date.now() + tokenRes.expires_in
+
+        // Cache in the KV
+        const store: AccessTokenKV = {
+            token: this.token,
+            expiry: this.expiry,
+        }
+        await WEBHOOKS.put(AccessTokenKVKey, JSON.stringify(store), {
+            // Make this expire 2 mins before the token expires
+            expirationTtl: tokenRes.expires_in - 120,
+        })
     }
 }
 
