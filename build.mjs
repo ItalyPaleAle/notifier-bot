@@ -13,8 +13,9 @@ try {
     // This is used in development because the Bot Framework Emulator is running on localhost, but the Worker is running on the Cloudflare network, so it can't connect to "localhost"
     if (process.env.SERVICE_URL_OVERRIDE) {
         // Value must be quoted because it's a string
-        define['SERVICE_URL_OVERRIDE'] =
-            `'` + process.env.SERVICE_URL_OVERRIDE + `'`
+        define['SERVICE_URL_OVERRIDE'] = `'` + process.env.SERVICE_URL_OVERRIDE + `'`
+    } else {
+        define['SERVICE_URL_OVERRIDE'] = null
     }
 
     /** @type esbuild.BuildOptions */

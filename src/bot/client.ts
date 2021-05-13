@@ -4,6 +4,7 @@ import {
     ConversationAccount,
     ResourceResponse,
 } from 'botframework-schema'
+import {HttpStatusCode} from '../lib/http-status-codes'
 import accessToken from './access-token'
 
 /**
@@ -37,15 +38,15 @@ export class BotClient {
      * Sends an activity to a conversation
      * @param activity Activity object
      * @param text Text to send
-     * @returns The response object, containing the ID of the activity that was sent
+     * @returns The response object, containing the ID of the activity that was sent (if any)
      */
-    public async sendToConversation(text: string): Promise<ResourceResponse>
+    public async sendToConversation(text: string): Promise<Partial<ResourceResponse>>
     public async sendToConversation(
         activity: Partial<Activity>
-    ): Promise<ResourceResponse>
+    ): Promise<Partial<ResourceResponse>>
     public async sendToConversation(
         textOrActivity: Partial<Activity> | string
-    ): Promise<ResourceResponse> {
+    ): Promise<Partial<ResourceResponse>> {
         if (!textOrActivity) {
             throw Error('Paramter text/activity is required')
         }
@@ -68,20 +69,20 @@ export class BotClient {
      * @param activityId ID of the activity to reply to
      * @param activity Activity object
      * @param text Text to send
-     * @returns The response object, containing the ID of the activity that was sent
+     * @returns The response object, containing the ID of the activity that was sent (if any)
      */
     public async replyToActivity(
         activityId: string,
         activity: Partial<Activity>
-    ): Promise<ResourceResponse>
+    ): Promise<Partial<ResourceResponse>>
     public async replyToActivity(
         activityId: string,
         text: string
-    ): Promise<ResourceResponse>
+    ): Promise<Partial<ResourceResponse>>
     public async replyToActivity(
         activityId: string,
         textOrActivity: Partial<Activity> | string
-    ): Promise<ResourceResponse> {
+    ): Promise<Partial<ResourceResponse>> {
         if (!activityId || !textOrActivity) {
             throw Error('Parameters activityId and activity/text are required')
         }
@@ -122,12 +123,12 @@ export class BotClient {
      * Updates an activity
      * @param activityId ID of the activity to update
      * @param activity Updated activity object
-     * @returns The response object, containing the ID of the activity that was updated
+     * @returns The response object, containing the ID of the activity that was updated (if any)
      */
     public async updateActivity(
         activityId: string,
         activity: Partial<Activity>
-    ): Promise<ResourceResponse> {
+    ): Promise<Partial<ResourceResponse>> {
         if (!activityId || !activity) {
             throw Error('Parameters activityId and activity are required')
         }
@@ -149,13 +150,13 @@ export class BotClient {
      * @param method API method
      * @param activity Activity object
      * @param httpVerb HTTP verb to use (default: `POST`)
-     * @returns The response object, containing the ID of the activity that was sent
+     * @returns The response object, containing the ID of the activity that was sent (if any)
      */
     private async sendActivity(
         method: string,
         activity: Partial<Activity>,
         httpVerb?: 'POST' | 'PUT'
-    ): Promise<ResourceResponse> {
+    ): Promise<Partial<ResourceResponse>> {
         // Ensure that required values are set
         if (!method || !activity) {
             throw Error('Parameters method and activity are required')
@@ -181,10 +182,18 @@ export class BotClient {
             throw Error('Invalid response status code: ' + res.status)
         }
 
-        // Parse the JSON response
-        const data = (await res.json()) as ResourceResponse
-        if (!data || !data.id) {
-            throw Error('Invalid response format')
+        // We may or may not have a response
+        // There's no response if status code is a 2xx status code but not 200 (OK)
+        let data = {} as Partial<ResourceResponse>
+        if (res.status == HttpStatusCode.Ok) {
+            const dataText = await res.text()
+            if (dataText.length) {
+                try {
+                    data = JSON.parse(dataText) as Partial<ResourceResponse>
+                } catch (err) {
+                    console.log('Error parsing JSON response', dataText, err)
+                }
+            }
         }
         return data
     }

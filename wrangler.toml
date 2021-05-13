@@ -14,12 +14,11 @@ kv_namespaces = [
 ]
 
 [vars]
-TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_APP_ID = "81e2ddb7-7c62-4d4a-9506-55e6a7b159c0"
 TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
-BASE_URL = "http://TODO"
-# This uses the Bot Emulator
-AUTH_JWKS_URI = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/discovery/v2.0/keys"
-AUTH_ISSUER = "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0"
+BASE_URL = "https://notify-cfbot.italypaleale.workers.dev"
+AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
+AUTH_ISSUER = "https://api.botframework.com"
 
 [build]
 command = "NODE_ENV=development npm run build"
@@ -36,7 +35,7 @@ kv_namespaces = [
 ]
 
 [env.local.vars]
-TEAMS_APP_ID = "5f9f184e-e03c-4f19-b095-2119b8536f6c"
+TEAMS_APP_ID = "81e2ddb7-7c62-4d4a-9506-55e6a7b159c0"
 TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
 BASE_URL = "http://127.0.0.1:8787"
 # This uses the Bot Emulator
