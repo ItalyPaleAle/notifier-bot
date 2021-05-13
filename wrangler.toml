@@ -14,7 +14,7 @@ kv_namespaces = [
 ]
 
 [vars]
-TEAMS_APP_ID = "81e2ddb7-7c62-4d4a-9506-55e6a7b159c0"
+TEAMS_APP_ID = "c96359b2-d5c4-471f-809f-0194686d82e9"
 TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
 BASE_URL = "https://notify-cfbot.italypaleale.workers.dev"
 AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
@@ -38,7 +38,7 @@ watch_dir = "src"
 upload = { format = "service-worker" }
 
 [env.local.vars]
-TEAMS_APP_ID = "81e2ddb7-7c62-4d4a-9506-55e6a7b159c0"
+TEAMS_APP_ID = "c96359b2-d5c4-471f-809f-0194686d82e9"
 TEAMS_TOKEN_ENDPOINT = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
 BASE_URL = "http://127.0.0.1:8787"
 # This uses the Bot Emulator
