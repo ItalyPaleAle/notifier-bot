@@ -3,7 +3,7 @@ export {}
 declare global {
     // Constants from the environment
     // This is used during development to expose the Bot Framework Emulator that's running on localhost
-    const SERVICE_URL_OVERRIDE: string | undefined
+    const SERVICE_URL_OVERRIDE: string | null | undefined
 
     // Constants from wrangler.toml
     const BASE_URL: string

@@ -191,7 +191,7 @@ async function validateAuthHeader(
 function buildMessage(recipientId: string, message: string): Partial<Activity> {
     return {
         type: 'message',
-        text: `I received a message through a webhook:`,
+        text: '',
         attachments: [
             {
                 contentType: 'application/vnd.microsoft.card.adaptive',
@@ -202,8 +202,16 @@ function buildMessage(recipientId: string, message: string): Partial<Activity> {
                     body: [
                         {
                             type: 'TextBlock',
+                            text: 'I received a message through a webhook:',
+                            wrap: true,
+                            color: 'Accent',
+                            weight: 'Bolder',
+                        },
+                        {
+                            type: 'TextBlock',
                             text: message,
                             wrap: true,
+                            //separator: true,
                         },
                         {
                             type: 'TextBlock',
@@ -211,6 +219,7 @@ function buildMessage(recipientId: string, message: string): Partial<Activity> {
                             size: 'Small',
                             isSubtle: true,
                             separator: true,
+                            weight: 'Lighter',
                         },
                     ],
                 },
