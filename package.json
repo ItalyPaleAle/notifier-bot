@@ -13,7 +13,7 @@
     "test:build": "tsc --project ./test"
   },
   "author": "Alessandro Segala (@ItalyPaleAle)",
-  "license": "None",
+  "license": "MIT",
   "private": true,
   "devDependencies": {
     "@cloudflare/workers-types": "^2.2.2",
