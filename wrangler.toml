@@ -21,8 +21,6 @@ AUTH_JWKS_URI = "https://login.botframework.com/v1/.well-known/keys"
 AUTH_ISSUER = "https://api.botframework.com"
 
 [build]
-command = "npm run build"
-watch_dir = "src"
 upload = { format = "service-worker" }
 
 #
@@ -58,8 +56,6 @@ kv_namespaces = [
 ]
 
 [env.production.build]
-command = "npm run build"
-watch_dir = "src"
 upload = { format = "service-worker" }
 
 [env.production.vars]

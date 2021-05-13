@@ -23,9 +23,10 @@ jobs:
         with:
           node-version: '16.x'
 
-      - name: 'Install dependencies'
+      - name: 'Build app'
         run: |
           npm ci
+          npm run build
 
       - name: 'Deploy to dev environment'
         uses: cloudflare/wrangler-action@1.3.0
