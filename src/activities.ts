@@ -2,6 +2,7 @@ import activityRouter from './bot/activity-router'
 import newWebhook from './activities/new-webhook'
 import listWebhooks from './activities/list-webhooks'
 import deleteWebhook from './activities/delete-webhook'
+import deleteWebhookConfirm from './activities/delete-webhook-confirm'
 
 // Add all activities
 activityRouter.add(
@@ -23,4 +24,10 @@ activityRouter.add(
         action: 'delete',
     },
     deleteWebhook
+)
+activityRouter.add(
+    {
+        action: 'delete/confirm',
+    },
+    deleteWebhookConfirm
 )
