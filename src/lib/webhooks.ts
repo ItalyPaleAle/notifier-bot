@@ -11,8 +11,14 @@ export type WebhookObject = {
     user: ChannelAccount
 }
 
+/** Max number of webhooks per conversation */
+export const maxWebhooksPerConversation = 5
+
 /** Length of the webhook ID */
 export const webhookIdLength = 10
+
+/** Length of the prefix for the webhook ID */
+export const webhookPrefixLength = 12
 
 /** Regexp to match a webhook ID */
 export const webhookIdFormat =
@@ -21,6 +27,9 @@ export const webhookIdFormat =
 /** Regexp to match the webhook key (with optional "Bearer " prefix) */
 export const webhookKeyFormat =
     /^(Bearer )?(SK_[6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz]{22})$/
+
+/** Error raised when the conversation already has too many webhooks */
+export const TooManyWebhooksError = new Error('too-many-webhooks')
 
 // Nanoid's with a custom alphabet
 // We are removing lookalike characters, symbols, and letters/numbers that may allow inappropriate words
@@ -31,9 +40,20 @@ export async function NewWebhook(activity: Activity): Promise<{id: string; key: 
     // Get the hash of the conversation ID and grab the first 12 characters (bas64-encoded)
     // This will be used as prefix for the webhook ID
     const conversationIdHash = await SHA256String(activity.conversation.id)
+    const prefix = conversationIdHash.substring(0, webhookPrefixLength)
+
+    // Retrieve all webhooks for this conversation and ensure we're not over the limit
+    const res = await WEBHOOKS.list({
+        prefix,
+        // Add 1 to see if we're over
+        limit: maxWebhooksPerConversation + 1,
+    })
+    if (res?.keys && res.keys.length >= maxWebhooksPerConversation) {
+        throw TooManyWebhooksError
+    }
 
     // Generate a new webhook
-    const webhookId = conversationIdHash.substring(0, 12) + '/' + nanoidId()
+    const webhookId = prefix + '/' + nanoidId()
     const webhookKey = 'SK_' + nanoidKey()
 
     // Calculate the hash of the webhook key

@@ -33,3 +33,20 @@ export function RemoveMentions(activity: Partial<Activity>, userIds?: string[]):
     // Trim the result
     return resultText.trim()
 }
+
+/**
+ * Normalizes the conversation.id property.
+ * If the activity comes from a channel, we don't want to respond in a thread, but just send a new message to the same channel.
+ * Note that this method modified the `activity` parameter.
+ * @param activity The object with the incoming activity
+ */
+export function NormalizeConversationId(activity: Activity) {
+    if ((activity.conversation.conversationType || '').toLowerCase() == 'channel') {
+        // Property to use can either be channelData.channel.id or channelData.teamsChannelId
+        if (activity.channelData?.channel?.id) {
+            activity.conversation.id = activity.channelData.channel.id
+        } else if (activity.channelData?.teamsChannelId) {
+            activity.conversation.id = activity.channelData.teamsChannelId
+        }
+    }
+}

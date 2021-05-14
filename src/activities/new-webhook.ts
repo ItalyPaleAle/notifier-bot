@@ -1,7 +1,9 @@
-import {NewWebhook} from '../lib/webhooks'
-import BotClient from '../bot/client'
 // Import types only
 import {Activity} from 'botframework-schema'
+import {NormalizeConversationId} from '../bot/utils'
+
+import {NewWebhook, TooManyWebhooksError} from '../lib/webhooks'
+import BotClient from '../bot/client'
 
 // Handler for the "new webhook" command
 export default async (activity: Activity) => {
@@ -9,26 +11,38 @@ export default async (activity: Activity) => {
         throw Error('conversation.id missing in activity object')
     }
 
-    // If the message was sent to a channel, make sure we respond to the right channel, but not in a thread
+    // Normalize the conversation id
+    NormalizeConversationId(activity)
     //console.log(JSON.stringify(activity, undefined, '  '))
-    if ((activity.conversation.conversationType || '').toLowerCase() == 'channel') {
-        if (activity.channelData?.channel?.id) {
-            activity.conversation.id = activity.channelData.channel.id
-        }
-    }
 
-    // Generate a new webhook
-    const webhook = await NewWebhook(activity)
-
-    // Send a message to the client with the credentials to the webhook
+    // Create a client to respond
     const client = new BotClient(
         activity.serviceUrl,
         activity.conversation,
         activity.recipient,
         activity.from
     )
+
+    // Generate a new webhook
+    let message: Partial<Activity>
+    try {
+        const webhook = await NewWebhook(activity)
+        message = buildMessage(webhook.id, webhook.key)
+    } catch (err) {
+        if (err == TooManyWebhooksError) {
+            // Send the error message
+            message = {
+                type: 'message',
+                text: `Sorry, this conversation has already reached the maximum number of webhooks and I can't add another one`,
+            }
+        } else {
+            // Re-throw
+            throw err
+        }
+    }
+
     // We must await on this otherwise there would be a fetch invocation outside of a running request in the worker
-    await client.sendToConversation(buildMessage(webhook.id, webhook.key))
+    await client.sendToConversation(message)
 }
 
 function buildMessage(webhookId: string, webhookKey: string): Partial<Activity> {
