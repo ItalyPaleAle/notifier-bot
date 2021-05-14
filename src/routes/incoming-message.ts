@@ -5,7 +5,7 @@ import {HttpStatusCode} from '../lib/http-status-codes'
 import {Handler} from '../lib/types'
 import {ErrorResponse} from '../lib/utils'
 import {CheckAuth} from '../auth'
-import activityRouter from '../lib/activity-router'
+import activityRouter from '../bot/activity-router'
 import {RemoveMentions} from '../bot/utils'
 
 /**
@@ -46,7 +46,7 @@ const handler: Handler = async (req: Request) => {
     }
 
     // Remove mentions from the text
-    activity.text = RemoveMentions(activity, [activity.recipient.id])
+    RemoveMentions(activity, [activity.recipient.id])
 
     //console.log(JSON.stringify(activity, undefined, '  '))
 

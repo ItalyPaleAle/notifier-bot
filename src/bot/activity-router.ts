@@ -15,8 +15,10 @@ export type ActivityRouteMatchFunction = (activity: Activity) => boolean
 export type ActivityRouteMatchObject = {
     /** Match activity type */
     type?: ActivityTypes | string
-    /**Match activity's text */
+    /** Match activity's text */
     text?: string | RegExp
+    /** Match an action (in value.payload.action) */
+    action?: string
     /** Use a function to determine if the route matches this activity */
     matchFunc?: ActivityRouteMatchFunction
 }
@@ -55,7 +57,7 @@ export class ActivityRouter {
                 matchFunc: match,
             }
         }
-        if (!match.type && !match.text && !match.matchFunc) {
+        if (!match.type && !match.text && !match.matchFunc && !match.action) {
             throw Error('At least one matching condition is required')
         }
         this.routes.set(match, callback)
@@ -73,8 +75,17 @@ export class ActivityRouter {
             if (match.type && activity.type.toLowerCase() != match.type) {
                 continue
             }
+            // Try matching an action
+            if (match.action) {
+                if (activity.value?.payload?.action != match.action) {
+                    continue
+                }
+            }
             // Try matching activity's text
             if (match.text) {
+                if (!activity.text) {
+                    continue
+                }
                 if (typeof match.text == 'string' && activity.text != match.text) {
                     continue
                 } else if (
@@ -85,7 +96,7 @@ export class ActivityRouter {
                     continue
                 }
             }
-            // Try invoking the callback
+            // Try matching using matchFunc
             if (match.matchFunc && !match.matchFunc(activity)) {
                 continue
             }

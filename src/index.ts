@@ -17,8 +17,13 @@ addEventListener('fetch', (event: FetchEvent) => {
         event.respondWith(
             // Wrap in a Promise to ensure it's asynchronous
             Promise.resolve(match.handler(req, match.params)).catch((err) => {
-                if (typeof err == 'object' && err instanceof Error) {
-                    console.error('Caught error', err.message, err.stack)
+                if (typeof err == 'object') {
+                    // We may have a Response object already
+                    if (err instanceof Response) {
+                        return err
+                    } else if (err instanceof Error) {
+                        console.error('Caught error', err.message, err.stack)
+                    }
                 } else {
                     console.error('Caught error', err)
                 }

@@ -1,19 +1,22 @@
 import {Activity, Mention} from 'botframework-schema'
 
 /**
- * Removes mentions from an activity's text
+ * Removes mentions from an activity's text (and trims surrounding whitespaces)
+ * Note that this modified the activity parameter
  * @param activity The incoming Activity object
  * @param userIds If set, will remove mentions of these users only; otherwise, all mentions are removed
  * @returns text with mentions removed (and surrounding whitespaces trimmed)
  */
-export function RemoveMentions(activity: Partial<Activity>, userIds?: string[]): string {
+export function RemoveMentions(activity: Partial<Activity>, userIds?: string[]) {
     if (!activity?.text) {
-        throw Error('text property is empty in the activity object')
+        // Do nothing
+        return
     }
 
-    // If there are no entities, there are no mentions (but trim the result anyways)
+    // If there are no entities, there are no mentions (but trim the text anyways)
     if (!activity.entities || !activity.entities.length) {
-        return activity.text.trim()
+        activity.text = activity.text.trim()
+        return
     }
 
     // Retrieve all mentions for the user IDs we want to remove
@@ -30,8 +33,8 @@ export function RemoveMentions(activity: Partial<Activity>, userIds?: string[]):
         }
     }
 
-    // Trim the result
-    return resultText.trim()
+    // Trim the text
+    activity.text = resultText.trim()
 }
 
 /**

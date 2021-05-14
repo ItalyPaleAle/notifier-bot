@@ -47,6 +47,9 @@ function buildMessage(keys: {name: string}[]): Partial<Activity> {
         }
     }
 
+    // Sort keys alphabetically
+    keys.sort()
+
     // List all items
     const cardEntries: any[] = []
     for (let i = 0; i < keys.length; i++) {

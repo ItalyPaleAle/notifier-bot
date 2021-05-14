@@ -1,6 +1,7 @@
+import activityRouter from './bot/activity-router'
 import newWebhook from './activities/new-webhook'
 import listWebhooks from './activities/list-webhooks'
-import activityRouter from './lib/activity-router'
+import deleteWebhook from './activities/delete-webhook'
 
 // Add all activities
 activityRouter.add(
@@ -16,4 +17,10 @@ activityRouter.add(
         text: /^list webhooks?$/i,
     },
     listWebhooks
+)
+activityRouter.add(
+    {
+        action: 'delete',
+    },
+    deleteWebhook
 )
