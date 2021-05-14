@@ -8,7 +8,7 @@ import IncomingMessageRoute from './routes/incoming-message'
 const router = new Router<Handler>()
 
 // Routes
-router.post('/webhook/:id', WebhookRoute)
+router.post('/webhook/:id+', WebhookRoute)
 router.post('/bot/message', IncomingMessageRoute)
 
 export default router

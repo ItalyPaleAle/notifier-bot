@@ -16,7 +16,7 @@ export type ActivityRouteMatchObject = {
     /** Match activity type */
     type?: ActivityTypes | string
     /**Match activity's text */
-    text?: string
+    text?: string | RegExp
     /** Use a function to determine if the route matches this activity */
     matchFunc?: ActivityRouteMatchFunction
 }
@@ -70,12 +70,20 @@ export class ActivityRouter {
         // Find the first route that matches
         for (const [match, callback] of this.routes) {
             // Try matching activity type
-            if (match.type && activity.type != match.type) {
+            if (match.type && activity.type.toLowerCase() != match.type) {
                 continue
             }
             // Try matching activity's text
-            if (match.text && activity.text != match.text) {
-                continue
+            if (match.text) {
+                if (typeof match.text == 'string' && activity.text != match.text) {
+                    continue
+                } else if (
+                    typeof match.text == 'object' &&
+                    match.text instanceof RegExp &&
+                    !activity.text.match(match.text)
+                ) {
+                    continue
+                }
             }
             // Try invoking the callback
             if (match.matchFunc && !match.matchFunc(activity)) {

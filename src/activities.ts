@@ -1,10 +1,11 @@
-import newConversation from './activities/new-conversation'
+import newWebhook from './activities/new-webhook'
 import activityRouter from './lib/activity-router'
 
 // Add all activities
 activityRouter.add(
     {
-        type: 'conversationUpdate',
+        type: 'message',
+        text: /^(new|add|create) webhook$/i,
     },
-    newConversation
+    newWebhook
 )

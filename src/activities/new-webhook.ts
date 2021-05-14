@@ -3,11 +3,18 @@ import BotClient from '../bot/client'
 // Import types only
 import {Activity} from 'botframework-schema'
 
-// On new conversations, create a new webhook for them
+// Handler for the "new webhook" command
 export default async (activity: Activity) => {
-    //console.log(JSON.stringify(activity, undefined, '  '))
     if (!activity?.conversation || !activity.conversation.id) {
         throw Error('conversation.id missing in activity object')
+    }
+
+    // If the message was sent to a channel, make sure we respond to the right channel, but not in a thread
+    //console.log(JSON.stringify(activity, undefined, '  '))
+    if ((activity.conversation.conversationType || '').toLowerCase() == 'channel') {
+        if (activity.channelData?.channel?.id) {
+            activity.conversation.id = activity.channelData.channel.id
+        }
     }
 
     // Generate a new webhook
@@ -27,7 +34,7 @@ export default async (activity: Activity) => {
 function buildMessage(webhookId: string, webhookKey: string): Partial<Activity> {
     return {
         type: 'message',
-        text: `Here's the webhook I've created for you:`,
+        text: '',
         attachments: [
             {
                 contentType: 'application/vnd.microsoft.card.adaptive',
@@ -36,6 +43,13 @@ function buildMessage(webhookId: string, webhookKey: string): Partial<Activity> 
                     $schema: 'http://adaptivecards.io/schemas/adaptive-card.json',
                     version: '1.2',
                     body: [
+                        {
+                            type: 'TextBlock',
+                            text: `Here's the webhook I've created for you:`,
+                            wrap: true,
+                            color: 'Accent',
+                            weight: 'Bolder',
+                        },
                         {
                             type: 'Container',
                             items: [

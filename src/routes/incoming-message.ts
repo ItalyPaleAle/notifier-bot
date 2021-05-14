@@ -6,6 +6,7 @@ import {Handler} from '../lib/types'
 import {ErrorResponse} from '../lib/utils'
 import {CheckAuth} from '../auth'
 import activityRouter from '../lib/activity-router'
+import {RemoveMentions} from '../bot/utils'
 
 /**
  * Handler for the POST /bot/message route, where Bot Framework sends messages to
@@ -43,6 +44,11 @@ const handler: Handler = async (req: Request) => {
         ;(activity as ActivityTimestamps).rawLocalTimestamp = activity.localTimestamp
         activity.localTimestamp = new Date(activity.localTimestamp)
     }
+
+    // Remove mentions from the text
+    activity.text = RemoveMentions(activity, [activity.recipient.id])
+
+    //console.log(JSON.stringify(activity, undefined, '  '))
 
     // Find a callback to process this activity
     const callback = activityRouter.find(activity)

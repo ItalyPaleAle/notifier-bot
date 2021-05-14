@@ -1,13 +1,8 @@
 // Importing types only
-import {Activity, ConversationAccount} from 'botframework-schema'
+import {Activity} from 'botframework-schema'
 import {Params} from 'tiny-request-router'
 
-import {
-    webhookIdFormat,
-    webhookKeyFormat,
-    HashWebhookKey,
-    WebhookObject,
-} from '../lib/webhooks'
+import {webhookIdFormat, webhookKeyFormat, WebhookObject} from '../lib/webhooks'
 import {HttpStatusCode} from '../lib/http-status-codes'
 import {Handler} from '../lib/types'
 import {
@@ -17,6 +12,7 @@ import {
     LimitReader,
 } from '../lib/utils'
 import BotClient from '../bot/client'
+import {SHA256String} from '../lib/crypto'
 
 /** Type for the body of JSON-formatted webhook calls */
 type WebhookJSONRequest = {
@@ -156,7 +152,7 @@ async function validateAuthHeader(
     }
 
     // Calculate the SHA256 hash to compare with the value in the KV
-    const authHash = await HashWebhookKey(auth)
+    const authHash = await SHA256String(auth)
 
     // Retrieve the value from the KV
     const stored = await WEBHOOKS.get(webhookId)

@@ -1,6 +1,6 @@
-import {Encode as B64Encode} from './base64'
 import {Activity, ChannelAccount, ConversationAccount} from 'botframework-schema'
 import {customAlphabet} from 'nanoid'
+import {SHA256String} from './crypto'
 
 /** Data stored in the KV value */
 export type WebhookObject = {
@@ -12,10 +12,11 @@ export type WebhookObject = {
 }
 
 /** Length of the webhook ID */
-export const webhookIdLength = 16
+export const webhookIdLength = 10
 
 /** Regexp to match a webhook ID */
-export const webhookIdFormat = /^[6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz]{16}$/
+export const webhookIdFormat =
+    /^[A-Za-z0-9-_]{12}\/[6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz]{10}$/
 
 /** Regexp to match the webhook key (with optional "Bearer " prefix) */
 export const webhookKeyFormat =
@@ -27,14 +28,18 @@ const nanoidId = customAlphabet('6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz', webhookI
 const nanoidKey = customAlphabet('6789BCDFGHJKLMNPQRTWbcdfghjkmnpqrtwz', 22)
 
 export async function NewWebhook(activity: Activity): Promise<{id: string; key: string}> {
+    // Get the hash of the conversation ID and grab the first 12 characters (bas64-encoded)
+    // This will be used as prefix for the webhook ID
+    const conversationIdHash = await SHA256String(activity.conversation.id)
+
     // Generate a new webhook
-    const webhookId = nanoidId()
+    const webhookId = conversationIdHash.substring(0, 12) + '/' + nanoidId()
     const webhookKey = 'SK_' + nanoidKey()
 
     // Calculate the hash of the webhook key
     // This uses only 1 round of SHA256, but the input should have decent entropy already
     // Regardless, it's more for extra peace of mind than anything else
-    const webhookKeyHash = await HashWebhookKey(webhookKey)
+    const webhookKeyHash = await SHA256String(webhookKey)
 
     // Set the webhook ID for this conversation
     await WEBHOOKS.put(
@@ -52,15 +57,4 @@ export async function NewWebhook(activity: Activity): Promise<{id: string; key: 
         id: webhookId,
         key: webhookKey,
     }
-}
-
-/**
- * Returns the SHA-256 hash of the webhook key
- * @param webhookKey Webhook key to hash
- * @returns The SHA-256 hash of the key
- */
-export async function HashWebhookKey(webhookKey: string): Promise<string> {
-    const buf = new TextEncoder().encode(webhookKey)
-    const webhookKeyHash = await crypto.subtle.digest('SHA-256', buf)
-    return B64Encode(webhookKeyHash)
 }
