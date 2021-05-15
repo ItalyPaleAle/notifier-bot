@@ -88,6 +88,15 @@ If you need to set up the bot in Teams App Studio, make sure to:
 - Set the messaging endpoint to `https://<host>/bot/v0/message` (replace `<host>` with the host where your bot is deployed to)
 - Generate a new password for the bot, which will be used for the `TEAMS_APP_PASSWORD` secret stored alongside the Worker
 
+Then add the following commands:
+
+- Command text: `new webhook`  
+  Help text: `Create a new webhook for this conversation/channel`  
+  Select all scopes
+- Command text: `list webhooks`  
+  Help text: `List webhooks for this conversation/channel`  
+  Select all scopes
+
 ### Base URL
 
 In the `wrangler.toml` file, make sure to set the value of `BASE_URL` for all environments. This is only used to show the user the full endpoint of their webhooks.
