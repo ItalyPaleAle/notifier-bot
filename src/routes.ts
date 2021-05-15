@@ -9,6 +9,6 @@ const router = new Router<Handler>()
 
 // Routes
 router.post('/webhook/:id+', WebhookRoute)
-router.post('/bot/message', IncomingMessageRoute)
+router.post('/bot/v0/message', IncomingMessageRoute)
 
 export default router
