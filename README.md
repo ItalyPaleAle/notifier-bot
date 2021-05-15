@@ -2,13 +2,67 @@
 
 This is a bot for Microsoft Teams that allows you receive alerts via webhooks. You can add it to a conversation or a team and it will generate a new webhook endpoint that forwards messages to that.
 
-This bot is meant to be deployed on Cloudflare Workers, and it stores data on Workers KV.
+![Screenshot of the bot running inside Teams](./resources/images/screenshot.png)
+
+This bot is meant to be deployed on Cloudflare Workers, and it stores data on Workers KV. It is compliant with the [HTTP 1.1 Web Hooks for Event Delivery - Version 1.0.1](https://github.com/cloudevents/spec/blob/v1.0.1/http-webhook.md) spec.
 
 ## Try it live
 
-TODO
+Try the app in Microsoft Teams yourself.
+
+### Install the app
+
+Because I cannot distribute this publicly on the Teams store, you'll have to either sideload (upload) the app or publish it for users of your org.
+
+1. [Download the app bundle from this repo](./resources/notifier.zip). This is a ZIP file containing the app's manifest and icons.
+2. Please refer to the official documentation on how to install the app using the ZIP file you downloaded:
+   - [Uploading the app for you](https://docs.microsoft.com/en-us/microsoftteams/platform/concepts/deploy-and-publish/apps-upload#upload-your-app)
+   - [Publish for your org](https://docs.microsoft.com/en-us/MicrosoftTeams/manage-apps)
+
+### Add the bot
+
+You can add the bot to a 1:1 conversation, a group chat, or a team/channel.
+
+In group chats and channels, you can communicate with the bot by @'ing it before the messages, such as `@Notifier command`.
+
+### Create a new webhook
+
+To create a new webhook, send the bot the `new webhook` message (in group chats or channels, make sure to @ the bot).
+
+The bot will respond with a URL for your webhook (such as `https://notifier.italypaleale.me/webhook/wB0MPMWFMuqp/KgLbj6T6tf`) and an access token (a secret key, such as `SK_f6fG6pbMDW6GCBLCH9k7Jb`).
+
+Each conversation can have up to 5 webhooks. Also note that it may take up to 1 minute for all webhooks to be replicated across all deployments via Cloudflare KV.
+
+### Invoke the webhook
+
+To invoke the webhook, make a POST request to the URL for your conversation. There are two ways to send a message:
+
+- If the request's `Content-Type` header is `text/plain`, the entire body of the request is considered to be the message to be sent, as-is
+- You can also encode your message as JSON and use the `application/json` content type. The body should be a JSON-encoded objet containing the `message` key with your message; all other keys are ignored.
+
+Pass the access token as value for the **`Authorization`** header (another option, not recommended, is to append it to the URL as a querystring parameter `access_token`).
+
+For example, with curl:
+
+```sh
+# JSON-encoded message
+curl \
+  --header "Content-Type: application/json" \
+  --header "Authorization: SK_f6fG6pbMDW6GCBLCH9k7Jb" \
+  --data '{"message":"👋 hi there!"}' \
+  https://notifier.italypaleale.me/webhook/wB0MPMWFMuqp/KgLbj6T6tf
+
+# Plain-text message
+curl \
+  --header "Content-Type: text/plain" \
+  --header "Authorization: SK_f6fG6pbMDW6GCBLCH9k7Jb" \
+  --data 'Sending a message 💬' \
+  https://notifier.italypaleale.me/webhook/wB0MPMWFMuqp/KgLbj6T6tf
+```
 
 ## Development guide
+
+The steps below are for users who want to run their own bot based on this code.
 
 ### Environments
 
