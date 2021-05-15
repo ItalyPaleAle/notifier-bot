@@ -2,6 +2,7 @@
 import {Activity} from 'botframework-schema'
 
 import BotClient from '../bot/client'
+import {NormalizeConversationId} from '../bot/utils'
 
 // Handler for the "delete" action
 // This asks for confirmation before continuing
@@ -14,6 +15,9 @@ export default async (activity: Activity) => {
     if (!webhookId) {
         throw Error('value.payload.id is missing in activity object')
     }
+
+    // Normalize the conversation id
+    NormalizeConversationId(activity)
 
     // Client to respond to messages
     const client = new BotClient(
@@ -30,7 +34,7 @@ function buildMessage(webhookId: string): Partial<Activity> {
     const payload = {
         action: 'delete/confirm',
         id: webhookId,
-        time: new Date().toISOString(),
+        date: new Date().toUTCString(),
     }
     return {
         type: 'message',

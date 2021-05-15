@@ -1,4 +1,6 @@
+// Import types only
 import {Activity, ChannelAccount, ConversationAccount} from 'botframework-schema'
+
 import {customAlphabet} from 'nanoid'
 import {SHA256String} from './crypto'
 
@@ -9,6 +11,7 @@ export type WebhookObject = {
     serviceUrl: string
     bot: ChannelAccount
     user: ChannelAccount
+    date?: string
 }
 
 /** Max number of webhooks per conversation */
@@ -70,6 +73,7 @@ export async function NewWebhook(activity: Activity): Promise<{id: string; key: 
             serviceUrl: activity.serviceUrl,
             bot: activity.recipient,
             user: activity.from,
+            date: new Date().toUTCString(),
         } as WebhookObject)
     )
 

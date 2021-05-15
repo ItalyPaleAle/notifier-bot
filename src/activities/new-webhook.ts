@@ -13,7 +13,6 @@ export default async (activity: Activity) => {
 
     // Normalize the conversation id
     NormalizeConversationId(activity)
-    //console.log(JSON.stringify(activity, undefined, '  '))
 
     // Create a client to respond
     const client = new BotClient(
