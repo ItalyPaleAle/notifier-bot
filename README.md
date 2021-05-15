@@ -21,7 +21,7 @@ There are 3 environments for this bot:
 - production: deployed to `https://notifier.italypaleale.me`
   (worker name: `notify-cfbot-production`)
 
-### Run locally
+### Test with the Bot Framework Emulator
 
 ```sh
 # Set CF_ACCOUNT_ID to your Cloudflare Account ID
@@ -61,6 +61,13 @@ wrangler kv:namespace create "${KV_NAME}_dev"
 wrangler kv:namespace create "${KV_NAME}_production"
 ```
 
+The IDs are used in the `wrangler.toml` file:
+
+- The ID of the `preview` KV is used in all environments for the `preview_id` key
+- The ID of the `dev` KV is used in the main environment (the unnamed one)
+- The ID of the `production` KV is used in the production environment
+- The ID of the `preview` KV is also used in the local environment
+
 ### Set secrets
 
 ```sh
@@ -71,3 +78,16 @@ wrangler secret put TEAMS_APP_PASSWORD
 wrangler secret put TEAMS_APP_PASSWORD --env local
 wrangler secret put TEAMS_APP_PASSWORD --env production
 ```
+
+### Bot setup
+
+If you need to set up the bot in Teams App Studio, make sure to:
+
+- Create a new application for this bot with all scopes enabled (personal, team, group chat); leave all other options disabled (bot doesn't support audio/video calls, doesn't support uploading or downloading files, and is not a one-way notification bot)
+- The bot application id is the value for the `TEAMS_APP_ID` variable in `wrangler.toml`
+- Set the messaging endpoint to `https://<host>/bot/v0/message` (replace `<host>` with the host where your bot is deployed to)
+- Generate a new password for the bot, which will be used for the `TEAMS_APP_PASSWORD` secret stored alongside the Worker
+
+### Base URL
+
+In the `wrangler.toml` file, make sure to set the value of `BASE_URL` for all environments. This is only used to show the user the full endpoint of their webhooks.
