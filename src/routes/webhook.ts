@@ -31,7 +31,11 @@ const MaxBodySize = 4 << 10
  * @param req Request object
  * @returns Response object for the request
  */
-const handler: Handler = async (req: Request, params: Params) => {
+const handler: Handler = async (
+    req: Request,
+    params: Params,
+    background: Promise<any>[]
+) => {
     // Get the webhook ID
     const webhookId = params?.id
     if (!webhookId || !webhookId.match(webhookIdFormat)) {
@@ -110,11 +114,11 @@ const handler: Handler = async (req: Request, params: Params) => {
         auth.webhookObj.bot,
         auth.webhookObj.user
     )
-    // We must await on this otherwise there would be a fetch invocation outside of a running request in the worker
-    await client.sendToConversation(buildMessage(webhookId, message))
+    // In a worker, all fetch calls must be tied to a fetch event. To avoid pausing the incoming request, add this to the list of background requests
+    background.push(client.sendToConversation(buildMessage(webhookId, message)))
 
     return new Response('OK', {
-        status: HttpStatusCode.Ok,
+        status: HttpStatusCode.Accepted,
     })
 }
 

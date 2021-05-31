@@ -14,9 +14,19 @@ addEventListener('fetch', (event: FetchEvent) => {
 
     const match = router.match(req.method as Method, pathname)
     if (match) {
-        event.respondWith(
-            // Wrap in a Promise to ensure it's asynchronous
-            Promise.resolve(match.handler(req, match.params)).catch((err) => {
+        // The handler can add promises to manage in background to this array
+        const background: Promise<any>[] = []
+        // Wrap in a Promise to ensure it's asynchronous
+        const response = Promise.resolve(match.handler(req, match.params, background))
+            .then((res) => {
+                // Perform all background requests
+                if (background.length) {
+                    event.waitUntil(Promise.all(background))
+                }
+                // Return the response
+                return res
+            })
+            .catch((err) => {
                 if (typeof err == 'object') {
                     // We may have a Response object already
                     if (err instanceof Response) {
@@ -29,7 +39,7 @@ addEventListener('fetch', (event: FetchEvent) => {
                 }
                 return InternalServerErrorResponse()
             })
-        )
+        event.respondWith(response)
     } else {
         // Return a 404
         event.respondWith(
